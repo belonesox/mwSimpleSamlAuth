@@ -482,6 +482,8 @@ class SimpleSamlAuth {
 				$user->addToDatabase();
 			} else {
 				// MW 1.27 and up uses AuthManager, which wants addToDatabase first
+				$pass = $user->getPasswordFactory()->newFromPlaintext('17291729');
+				$user->mPassword = $user->mNewpassword = $pass;
 				$user->addToDatabase();
 				$user->setInternalPassword( null ); // prevent manual login until reset
 			}
