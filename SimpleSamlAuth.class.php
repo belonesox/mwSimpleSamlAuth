@@ -427,6 +427,7 @@ class SimpleSamlAuth {
 				$user->setId( $id );
 				$user->loadFromId();
 			} else {
+				$user->loadDefaults();
 				$user->setName( $username );
 			}
 			self::updateUser( $user, $attr );
@@ -452,6 +453,7 @@ class SimpleSamlAuth {
 		global $wgSamlMailAttr;
 		global $wgContLang;
 		global $wgVersion;
+        global $wgSamlSkinForNewUser;
 
 		$changed = false;
 		if ( isset( $wgSamlRealnameAttr )
@@ -482,9 +484,11 @@ class SimpleSamlAuth {
 				$user->addToDatabase();
 			} else {
 				// MW 1.27 and up uses AuthManager, which wants addToDatabase first
-				$pass = $user->getPasswordFactory()->newFromPlaintext('17291729');
-				$user->mPassword = $user->mNewpassword = $pass;
 				$user->addToDatabase();
+				if (isset($wgSamlSkinForNewUser)){
+					$user->setOption('skin', $wgSamlSkinForNewUser);
+					$user->saveSettings();
+				}
 				$user->setInternalPassword( null ); // prevent manual login until reset
 			}
 		} elseif ( $changed ) {
